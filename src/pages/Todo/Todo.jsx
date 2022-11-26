@@ -1,19 +1,27 @@
 //Библиотеки
 import { useEffect, useState } from "react"
+//Наш дефолтный axios
 import axios from "../../axios"
-
 //Компоненты
-import TodoItem from "../../components/TodoItem/TodoItem"
-import List from "../../components/List/List"
 import Panel from "../../components/Panel/Panel"
 import Button from "../../components/UI/Button/Button"
+import TodoList from "../../components/TodoList/TodoList"
 
 const Todo = () => {
+    //Основной список задач
     const [todos, setTodos] = useState([])
+    //Список выполненых задач
     const [completed, setCompleted] = useState([])
+    //Список не выполненых задач
     const [notDone, setNotDone] = useState([])
+    //Флаг для рендера модального окна
     const [isRenderModal, setIsRenderModal] = useState(false)
 
+    /**
+     * Переопределяет флаг isComplete в определенной задаче и
+     * отправляет запрос для изменения этого же поля в БД.
+     * @param {string} id параметр для определения задачи из списка задач.
+     */
     function editComplete(id) {
         const newTodos = todos.map(item => {
             if (item._id === id) {
@@ -32,6 +40,10 @@ const Todo = () => {
         setTodos(newTodos)
     }
 
+    /**
+     * Удаляет задачу из списка и отправляет запрос на удаление задачи на сервере
+     * @param {string} id параметр для определения задачи из списка задач.
+     */
     function remove(id) {
         const newTodos = todos.filter(item => {
             if (item._id !== id) {
@@ -45,6 +57,9 @@ const Todo = () => {
         setTodos(newTodos)
     }
 
+    /**
+     * Обновляет список задач
+     */
     function updateTodos() {
         (async () => {
             const { data } = await axios.get("/todos")
@@ -52,20 +67,23 @@ const Todo = () => {
         })()
     }
 
+    //Обновляем список задач при первом рендере
     useEffect(() => {
         updateTodos()
     }, [])
 
+    //Формируем массив выполненых задач
     useEffect(() => {
         const newCompleted = todos.filter(item => item.isCompleted)
         setCompleted(newCompleted)
     }, [todos])
 
+    //Формируем массив не выполненых задач
     useEffect(() => {
         const newNotDone = todos.filter(item => !item.isCompleted)
         setNotDone(newNotDone)
     }, [todos])
-    
+
     return (
         <>
             {isRenderModal &&
@@ -76,79 +94,32 @@ const Todo = () => {
                 />
             }
             <div className="todo">
-
                 <div className="container">
                     <div>
                         <h2 className="title">
                             Задачи
                         </h2>
-                        {notDone.length === 0 &&
-                            <div className="wrapper-message">
-                                <p>
-                                    Список задач пуст
-                                </p>
-                            </div>
-                        }
-                        {notDone.length !== 0 &&
-                            <div className="list">
-                                <div className="cols">
-                                    <p className="cols__title">Название</p>
-                                    <p className="cols__description">Описание</p>
-                                    <p className="cols__date">Срок</p>
-                                    <p className="cols__option">Действия</p>
-                                </div>
-                                <List
-                                    mass={notDone}
-                                    itemRender={item =>
-                                        <TodoItem
-                                            key={item._id}
-                                            item={item}
-                                            remove={remove}
-                                            editComplete={editComplete}
-                                        />
-                                    }
-                                />
-                            </div>
-                        }
+                        <TodoList
+                            massTodo={notDone}
+                            editComplete={editComplete}
+                            remove={remove}
+                        />
                     </div>
                     <div>
                         <h2 className="title">
                             Выполнено
                         </h2>
-                        {completed.length === 0 &&
-                            <div className="wrapper-message">
-                                <p>
-                                    Список выполненых задач пуст
-                                </p>
-                            </div>
-                        }
-                        {completed.length !== 0 &&
-                            <div className="list">
-                                <div className="cols">
-                                    <p className="cols__title">Название</p>
-                                    <p className="cols__description">Описание</p>
-                                    <p className="cols__date">Срок</p>
-                                    <p className="cols__option">Действия</p>
-                                </div>
-                                <List
-                                    mass={completed}
-                                    itemRender={item =>
-                                        <TodoItem
-                                            key={item._id}
-                                            item={item}
-                                            remove={remove}
-                                            editComplete={editComplete}
-                                        />
-                                    }
-                                />
-                            </div>
-                        }
-                        <div className="wrapper-btn-add">
-                            <Button
-                                onClick={() => setIsRenderModal(true)}
-                                text="Добавить"
-                            />
-                        </div>
+                        <TodoList
+                            massTodo={completed}
+                            editComplete={editComplete}
+                            remove={remove}
+                        />
+                    </div>
+                    <div className="wrapper-btn-add">
+                        <Button
+                            onClick={() => setIsRenderModal(true)}
+                            text="Добавить"
+                        />
                     </div>
                 </div>
             </div >

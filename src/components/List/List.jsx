@@ -1,3 +1,4 @@
+//Компонент для рендера на основе массива
 const List = ({ mass, itemRender }) => {
     return (
         <>

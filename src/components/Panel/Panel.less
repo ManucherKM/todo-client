@@ -1,6 +1,7 @@
 .panel {
     display: flex;
     flex-direction: column;
+    width: 20rem;
     gap: 20px;
 
     &__title {
@@ -10,6 +11,25 @@
     }
 
     .border-red {
-       border-color: red;
+        border-color: red;
+    }
+
+    .input-file {
+        width: 0.01;
+        height: 0.01;
+        opacity: 0.01;
+        position: absolute;
+    }
+
+    input {
+        outline: none;
+        padding: 10px;
+    }
+
+    textarea {
+        outline: none;
+        padding: 10px;
+        resize: none;
+        height: 150px;
     }
 }

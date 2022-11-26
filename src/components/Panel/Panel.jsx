@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
 
 import Modal from "../UI/Modal/Modal"
 import Button from "../UI/Button/Button"
@@ -11,39 +11,55 @@ const Panel = ({ setTodos, todos, setModal }) => {
   const [dateValue, setDateValue] = useState("")
   const [fileValue, setFileValue] = useState(null)
   const [styleError, setStyleError] = useState("")
+  const inputFile = useRef(null)
 
+  /**
+   * При клике на кнопку начинаем отправлять форму 
+   */
   async function addTodo() {
-    if (!titleValue || !subtitleValue || !dateValue) {
+    //Небольшая валидация
+    if (!titleValue.trim() || !subtitleValue.trim() || !dateValue) {
       setStyleError("border-red")
       return
     }
-
+    //Если валидация успешная - очищаем переменную с css классам для ошибок
     setStyleError("")
 
+    //Создаем FormData для отправки данных
     const formData = new FormData();
     formData.append("title", titleValue.trim())
     formData.append("date", dateValue)
     formData.append("subtitle", subtitleValue.trim())
-
+    //Добавляем файл задачи в FormData если он был выбран
     if (fileValue) {
       for (const item of fileValue) {
         formData.append("files", item)
       }
     }
-
+    //Отправляем FormData на бекенд и достаем ответ из запроса
     const { data } = await axios.post("/todos", formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     })
-    
+
+    //В новый список задач разворачиваем старый и в конец добавляем новую задачу
     setTodos([...todos, data])
+    //Очищаем форму
     setTitlValue("")
     setSubtitleValue("")
     setDateValue("")
     setFileValue("")
+    //Закрываем модальное окно
     setModal(false)
   }
+  /**
+   * При клике на кнопку кликаем на input с типом file
+   */
+  function selectFile() {
+    inputFile.current.click()
+  }
+
   return (
     <Modal setModalRender={setModal}>
       <div className="panel">
@@ -64,13 +80,20 @@ const Panel = ({ setTodos, todos, setModal }) => {
           value={subtitleValue}
           placeholder="Subtitle"
         />
-        <input
-          onChange={e => setFileValue(e.target.files)}
-          type="file"
-          multiple
-          placeholder=".docx, .txt"
-          accept=".docx, .txt"
-        />
+        <label htmlFor="input-file">
+          <Button
+            text="Выбрать"
+            onClick={selectFile}
+          />
+          <input
+            ref={inputFile}
+            onChange={e => setFileValue(e.target.files)}
+            type="file"
+            multiple
+            className="input-file"
+            accept=".docx, .txt"
+          />
+        </label>
         <input
           onChange={e => setDateValue(e.target.value)}
           type="date"

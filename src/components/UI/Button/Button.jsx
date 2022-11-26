@@ -1,4 +1,7 @@
 const Button = ({ text, onClick = () => { } }) => {
+    /**
+     * Вызывает функцию переданную пропсом
+     */
     function clickHandler() {
         onClick()
     }

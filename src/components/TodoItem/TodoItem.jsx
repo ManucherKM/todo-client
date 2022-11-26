@@ -3,15 +3,22 @@ import dayjs from "dayjs"
 import Button from "../UI/Button/Button"
 
 const TodoItem = ({ item, editComplete, remove }) => {
+    //Название класса для задач у которых прошел срок их выполнения
     const [cross, setCross] = useState("")
 
     useEffect(() => {
+        //Получаем конечный срок задачи
         const todoTime = item.date
+        //Получаем текущую дату 
         const date = dayjs().format().split("T")[0]
+        /*
+        Если текущая дата больще даты срока и эта задача не выполнена -
+        добавляем css класс для отметки этого
+        */
         if (todoTime < date && !item.isCompleted) {
             setCross("cross")
         }
-    }, [])
+    }, [item])
 
     return (
         <div className="todo-item">
@@ -25,8 +32,10 @@ const TodoItem = ({ item, editComplete, remove }) => {
                 {item.date}
             </p>
             <div className="todo-item__wrapper-btns">
+                {/* Если файлов у задачи нет - не отрисовываем кнопку для скачивания файлов */}
                 {item.files !== undefined &&
                     < a
+
                         href={`https://todotestquestion.herokuapp.com/file/${item.files}`}
                         download="Архив.zip"
                     >
