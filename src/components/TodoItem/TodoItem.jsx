@@ -27,7 +27,7 @@ const TodoItem = ({ item, editComplete, remove }) => {
             <div className="todo-item__wrapper-btns">
                 {item.files !== undefined &&
                     < a
-                        href={`http://localhost:5000/file/${item.files}`}
+                        href={`https://todotestquestion.herokuapp.com/file/${item.files}`}
                         download="Архив.zip"
                     >
                         <Button text="Скачать" />
