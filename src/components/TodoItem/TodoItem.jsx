@@ -36,7 +36,7 @@ const TodoItem = ({ item, editComplete, remove }) => {
                 {item.files !== undefined &&
                     < a
 
-                        href={`https://todotestquestion.herokuapp.com/file/${item.files}`}
+                        href={`https://todo-beckend-production.up.railway.app/file/${item.files}`}
                         download="Архив.zip"
                     >
                         <Button text="Скачать" />
